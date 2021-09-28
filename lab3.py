@@ -1,6 +1,5 @@
 import string
 import re
-#init_str = "\ttHis iz your homeWork, copy these Text to variable. \n\n\tYou NEED TO normalize it fROM letter CASEs point oF View. also, create one MORE senTENCE witH LAST WoRDS of each existING SENtence and add it to the END OF this Paragraph.\n\n\tit iZ misspeLLing here. fix“iZ” with correct “is”, but ONLY when it Iz a mistAKE. \n\n\tlast iz TO calculate nuMber OF Whitespace characteRS in this Text. caREFULL, not only Spaces, but ALL whitespaces. I got 87.\n\n"
 init_str = '''	tHis iz your homeWork, copy these Text to variable. 
 
 	You NEED TO normalize it fROM letter CASEs point oF View. also, create one MORE senTENCE witH LAST WoRDS of each existING SENtence and add it to the END OF this Paragraph.
@@ -10,9 +9,8 @@ init_str = '''	tHis iz your homeWork, copy these Text to variable.
 	last iz TO calculate nuMber OF Whitespace characteRS in this Text. caREFULL, not only Spaces, but ALL whitespaces. I got 87.
 
 '''
-modif_str = init_str
-modif_str = (modif_str.lower()).replace(' iz ', ' is ')  # modify iz to is
-end_of_sent = (' '.join(re.findall(r'\S*[.]', modif_str)).replace('. ', ' ')) + ' '  # sentence from last words
+modif_str = init_str.lower().replace(' iz ', ' is ')  # modify iz to is
+end_of_sent = ' '.join(re.findall(r'\S*[.]', modif_str)).replace('. ', ' ') + ' '  # sentence from last words
 cnt = 0
 str_new_sent = []
 for i in range(len(modif_str)):
