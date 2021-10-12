@@ -83,21 +83,23 @@ def cnt_whitespaces(str_for_count_whitespaces):
     return cnt_whitesp
 
 
-random_lst_of_dict, all_keys, result_dict = [], [], {}
-create_random_dict(random.randint(2, 10))   # create of random list of dict with random low letters of English alphabet
-all_keys_dict(random_lst_of_dict)  # all keys of all dicts
-print(result_of_dict(sorted(set(all_keys))))  # dict with unique keys and max value
-init_str = '''	tHis iz your homeWork, copy these Text to variable. 
-
-	You NEED TO normalize it fROM letter CASEs point oF View. also, create one MORE senTENCE witH LAST WoRDS of each existING SENtence and add it to the END OF this Paragraph.
-
-	it iZ misspeLLing here. fix“iZ” with correct “is”, but ONLY when it Iz a mistAKE. 
-
-	last iz TO calculate nuMber OF Whitespace characteRS in this Text. caREFULL, not only Spaces, but ALL whitespaces. I got 87.
-
-'''
-modif_str = replace_sent_in_text(init_str, ' iz ', ' is ')  # modify in init text(var init_str) iz to is in
-new_sent_from_end_of_sent = new_sentence(modif_str)   # new str from  the last word of each sentence
-list_of_sent = insert_new_sent(new_sent_from_end_of_sent, 2)  # insert new sentence on selected position
-print('new text:\n', sentence_with_capit_letters(list_of_sent))   # text with capital letters in every sentence
-print('Count of whitespaces: ', cnt_whitespaces(init_str))  # count of whitespaces in the text
+if __name__ == "__main__":
+    random_lst_of_dict, all_keys, result_dict = [], [], {}
+    create_random_dict(
+        random.randint(2, 10))  # create of random list of dict with random low letters of English alphabet
+    all_keys_dict(random_lst_of_dict)  # all keys of all dicts
+    print(result_of_dict(sorted(set(all_keys))))  # dict with unique keys and max value
+    init_str = '''	tHis iz your homeWork, copy these Text to variable. 
+    
+        You NEED TO normalize it fROM letter CASEs point oF View. also, create one MORE senTENCE witH LAST WoRDS of each existING SENtence and add it to the END OF this Paragraph.
+    
+        it iZ misspeLLing here. fix“iZ” with correct “is”, but ONLY when it Iz a mistAKE. 
+    
+        last iz TO calculate nuMber OF Whitespace characteRS in this Text. caREFULL, not only Spaces, but ALL whitespaces. I got 87.
+    
+    '''
+    modif_str = replace_sent_in_text(init_str, ' iz ', ' is ')  # modify in init text(var init_str) iz to is in
+    new_sent_from_end_of_sent = new_sentence(modif_str)  # new str from  the last word of each sentence
+    list_of_sent = insert_new_sent(new_sent_from_end_of_sent, 2)  # insert new sentence on selected position
+    print('new text:\n', sentence_with_capit_letters(list_of_sent))  # text with capital letters in every sentence
+    print('Count of whitespaces: ', cnt_whitespaces(init_str))  # count of whitespaces in the text
