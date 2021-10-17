@@ -88,21 +88,20 @@ class NewRecordsFromFile:
         if NewRecordsFromFile.is_file_exists(self):
             with open(self.full_path, 'r') as file_info_inserted:
                 self.count_of_records = NewRecordsFromFile.count_of_records_less_then_len_of_file(self)
-                while (
-                        cnt_of_records_in_file < self.count_of_records) and (
+                while (cnt_of_records_in_file < self.count_of_records) and (
                         self.cnt_of_all_records < self.len_of_reading_file()):
                     cur_line_of_file = file_info_inserted.readline()
-                    if (cur_line_of_file != '\n') and ('------' not in cur_line_of_file) and cur_line_of_file != '':
+                    if (NewInformation.end_record not in cur_line_of_file) and (cur_line_of_file != ''):
                         self.line_to_insert += lab4.sentence_with_capit_letters((cur_line_of_file.split('. ')))
+                        self.cnt_of_all_records += 1
+                    elif (NewInformation.end_record in cur_line_of_file) and (cur_line_of_file != '\n') \
+                            and (cur_line_of_file != ''):
                         cnt_of_records_in_file += 1
                         self.cnt_of_all_records += 1
-                    elif cur_line_of_file == '\n':
                         self.line_to_insert += cur_line_of_file
-                        self.cnt_of_all_records += 1
-                    elif '----------' in cur_line_of_file:
-                        self.line_to_insert += cur_line_of_file.capitalize()
-                        cnt_of_records_in_file += 1
-                        self.cnt_of_all_records += 1
+                    elif cur_line_of_file == '':
+                        cnt_of_records_in_file = self.len_of_reading_file()
+            self.line_to_insert += '\n'
         return self.line_to_insert
 
     def insert_into_file(self):
@@ -114,6 +113,7 @@ class NewRecordsFromFile:
 
     def remove_file(self):
         if self.is_file_exists:
+
             if self.cnt_of_all_records >= self.len_of_reading_file():
                 os.remove(self.full_path)
                 print(f'File {self.full_path} was deleted')
@@ -122,10 +122,7 @@ class NewRecordsFromFile:
         len_of_file = self.len_of_reading_file()
         if self.count_of_records * 4 >= len_of_file:
             print('WARNING! You chose more records for load than in file, the whole file will be loaded')
-            self.count_of_records = len_of_file
-            return self.count_of_records
-        else:
-            return self.count_of_records * 4
+        return self.count_of_records
 
 
 def create_files_csv():
@@ -209,4 +206,3 @@ def main_menu():
 
 if __name__ == "__main__":
     main_menu()
-
