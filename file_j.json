@@ -1,0 +1,19 @@
+[
+{
+  "header": "news",
+  "text": "dlgkgitn sdfkgt. fjflghd sldkdlf. ssa. ffdf. from file.txt",
+  "city": "vvv",
+  "date_time": "11/10/2021 23.11"
+},
+{
+  "header": "weather forecast",
+  "text": "today is cloudy",
+  "temperature": "3",
+  "city": "minsk",
+  "date": "11/10/2021"
+},
+{
+  "header": "private ad",
+  "text": "sell old bike",
+  "date": "11/10/2021"
+}]
