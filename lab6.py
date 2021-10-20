@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 import lab4
 import lab7
+import lab8
 
 
 class NewInformation:
@@ -180,6 +181,31 @@ def type_new_info():
         print(f'All the information is in the file {NewInformation.file_to_write}')
 
 
+def load_from_file():
+    type_of_file = input('Choose the type of the loaded file: 1 - txt, 2 - json, 0 - exit:\n')
+    if type_of_file not in ['0', '1', '2']:
+        print(f'Your choice is "{type_of_file}" and it is not an expected value, please try again')
+    elif type_of_file in ['1', '2']:
+        folder_to_load_data = input(
+            f'Type path to the file(if it is empty will be a current path {NewRecordsFromFile.default_folder}):\n')
+        records_to_load = validation_count_of_records_type()
+        file_name = input('Type file name:\n')
+        file_to_load = NewRecordsFromFile(records_to_load, file_name, folder_to_load_data)
+        if NewRecordsFromFile.is_file_exists(file_to_load):
+            if type_of_file == '1':
+                NewRecordsFromFile.insert_into_file(file_to_load)
+                NewRecordsFromFile.remove_file(file_to_load)
+
+            if type_of_file == '2':
+                file_to_load = lab8.JsonProcess(records_to_load, file_name, folder_to_load_data)
+                if lab8.JsonProcess.is_file_can_be_processed(file_to_load):
+                    lab8.JsonProcess.proceed_dict_json(file_to_load)
+                    print('The data was added into file\n')
+                    lab8.JsonProcess.delete_json(file_to_load)
+        else:
+            print('Wrong file or path - data was not inserted!')
+
+
 def main_menu():
     print(' Hi, welcome to our news feed.')
     mode_type = ''
@@ -190,16 +216,7 @@ def main_menu():
         elif mode_type == '1':
             type_new_info()
         elif mode_type == '2':
-            folder_to_load_data = input(
-                f'Type path to the file(if it is empty will be a current path {NewRecordsFromFile.default_folder}):\n')
-            records_to_load = validation_count_of_records_type()
-            file_name = input('Type file name:\n')
-            file_to_load = NewRecordsFromFile(records_to_load, file_name, folder_to_load_data)
-            if NewRecordsFromFile.is_file_exists(file_to_load):
-                NewRecordsFromFile.insert_into_file(file_to_load)
-                NewRecordsFromFile.remove_file(file_to_load)
-            else:
-                print('Wrong file or path - data was not inserted!')
+            load_from_file()
     else:
         print('The program finished working.')
 
