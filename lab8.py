@@ -1,6 +1,8 @@
 import os
 import lab4
 from datetime import datetime
+import json
+from xml.etree import ElementTree as ElTree
 
 
 class JsonProcess:
@@ -13,15 +15,15 @@ class JsonProcess:
         self.length_of_description = 30
         self.end_record = '-' * self.length_of_description
         self.file_to_write = 'newsfeed.txt'
+        self.json_dict = []
 
     def read_from_json(self):
         with open(self.full_path, 'r') as json_to_read:
-            json_str = (json_to_read.read())
-        json_dict = eval(json_str)
-        return json_dict
+            self.json_dict = json.loads(json_to_read.read())
+        return self.json_dict
 
-    def proceed_dict_json(self):
-        json_dict = JsonProcess.read_from_json(self)
+    def proceed_dict_json(self, dictionary):
+        json_dict = dictionary
         for i in range(self.records_to_load):
             if json_dict[i]['header'].upper() == 'NEWS':
                 JsonProcess.proceed_news(self, json_dict[i])
@@ -91,3 +93,22 @@ class JsonProcess:
         if len(JsonProcess.read_from_json(self)) == self.records_to_load:
             os.remove(self.full_path)
             print(f'File {self.full_path} was deleted')
+
+
+class XMLProceed(JsonProcess):
+    def __int__(self, records_to_load, file_name, folder_to_load=str(os.path.abspath(os.curdir))):
+        JsonProcess.__init__(self, records_to_load, file_name, folder_to_load=str(os.path.abspath(os.curdir)))
+        self.tree = ElTree.parse(self.full_path)
+        self.root = self.tree.getroot()
+        self.note_list = []
+
+    def xml_to_list_of_dicts(self):
+        # note_list = []
+        for item in self.root.findall('note'):
+            note_dict = {}
+            note_item = item.attrib
+            note_dict.update(note_item)
+            for child in item:
+                note_dict[child.tag] = child.text
+            self.note_list.append(note_dict)
+        return self.note_list

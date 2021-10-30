@@ -1,0 +1,17 @@
+<NewsFeed>
+    <note header="news">
+        <text>so many text news. for different types of files</text>
+        <city>minsk</city>
+        <date_time>25/10/2021 20.11</date_time>
+    </note>
+    <note header="weather forecast">
+        <text>not bad weather. finally. sunny</text>
+        <temperature>12</temperature>
+        <city>brest</city>
+        <date>26/10/2021</date>
+    </note>
+    <note header ="private ad">
+        <text>new test ad. nothing for sale</text>
+        <date>25/12/2021</date>
+    </note>
+</NewsFeed>

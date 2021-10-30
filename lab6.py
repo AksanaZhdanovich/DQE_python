@@ -3,6 +3,7 @@ import os
 import lab4
 import lab7
 import lab8
+import lab9
 
 
 class NewInformation:
@@ -182,10 +183,10 @@ def type_new_info():
 
 
 def load_from_file():
-    type_of_file = input('Choose the type of the loaded file: 1 - txt, 2 - json, 0 - exit:\n')
-    if type_of_file not in ['0', '1', '2']:
+    type_of_file = input('Choose the type of the loaded file: 1 - txt, 2 - json, 3 - xml,  0 - exit:\n')
+    if type_of_file not in ['0', '1', '2', '3']:
         print(f'Your choice is "{type_of_file}" and it is not an expected value, please try again')
-    elif type_of_file in ['1', '2']:
+    elif type_of_file in ['1', '2', '3']:
         folder_to_load_data = input(
             f'Type path to the file(if it is empty will be a current path {NewRecordsFromFile.default_folder}):\n')
         records_to_load = validation_count_of_records_type()
@@ -195,13 +196,18 @@ def load_from_file():
             if type_of_file == '1':
                 NewRecordsFromFile.insert_into_file(file_to_load)
                 NewRecordsFromFile.remove_file(file_to_load)
-
             if type_of_file == '2':
                 file_to_load = lab8.JsonProcess(records_to_load, file_name, folder_to_load_data)
                 if lab8.JsonProcess.is_file_can_be_processed(file_to_load):
-                    lab8.JsonProcess.proceed_dict_json(file_to_load)
+                    lab8.JsonProcess.proceed_dict_json(file_to_load, lab8.JsonProcess.read_from_json(file_to_load))
                     print('The data was added into file\n')
                     lab8.JsonProcess.delete_json(file_to_load)
+            if type_of_file == '3':
+                file_to_load = lab9.ProcessXml(records_to_load, file_name, folder_to_load_data)
+                lab9.ProcessXml.xml_to_list_of_dicts(file_to_load)
+                lab9.ProcessXml.proceed_dict_xml(file_to_load)
+                print('The data was added into file\n')
+                lab9.ProcessXml.delete_xml(file_to_load)
         else:
             print('Wrong file or path - data was not inserted!')
 
