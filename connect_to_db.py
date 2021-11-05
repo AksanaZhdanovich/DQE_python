@@ -1,0 +1,5 @@
+host = '127.0.0.1'
+user = 'postgres'
+password = 'postgres'
+port = '5432'
+database = 'news_feed'

@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import lab10
 import lab4
 import lab7
 import lab8
@@ -24,7 +25,8 @@ class NewInformation:
         print('The information was added\n')
 
     def info_description(self):
-        return self.type_of_info + '-' * (self.length_of_description - len(self.type_of_info)) + '\n' + self.note + '\n'
+        return self.type_of_info + ' ' + '-' * (
+                    self.length_of_description - len(self.type_of_info)) + '\n' + self.note + '\n'
 
 
 class AddNews(NewInformation):
@@ -32,11 +34,14 @@ class AddNews(NewInformation):
     def __init__(self, note_text, city):
         super().__init__(note_text=note_text)
         self.datetime_news = datetime.now().strftime('%d/%m/%Y %H.%M')
-        self.type_of_info = 'News '
+        self.type_of_info = 'News'
         self.description = NewInformation.info_description(self)
         self.city = city
         self.text_in_file = self.description + self.city + ',' + self.datetime_news + '\n' + self.end_record + '\n'
         self.add_new_info_in_the_file()
+        news_to_db = lab10.PostgreSqlInsert()
+        lab10.PostgreSqlInsert.insert_new_records_news(news_to_db, self.type_of_info, note_text, self.city,
+                                                       self.datetime_news, '')
 
 
 class AddAd(NewInformation):
@@ -45,11 +50,14 @@ class AddAd(NewInformation):
         super().__init__(note_text=note_text)
         self.date = date
         self.expire_date = str((datetime.strptime(self.date, '%d/%m/%Y') - datetime.now()).days + 1)
-        self.type_of_info = 'Private Ad '
+        self.type_of_info = 'Private Ad'
         self.description = NewInformation.info_description(self)
         self.text_in_file = self.description + 'Actual until: ' + self.date + ', ' + self.expire_date + ' days left.' \
                             + '\n' + self.end_record + '\n'
         self.add_new_info_in_the_file()
+        news_to_db = lab10.PostgreSqlInsert()
+        lab10.PostgreSqlInsert.insert_new_records_news(news_to_db, self.type_of_info, note_text, '',
+                                                       self.date, '')
 
 
 class AddWeatherForecast(NewInformation):
@@ -58,11 +66,14 @@ class AddWeatherForecast(NewInformation):
         self.date = date
         self.degrees = degrees
         self.city = city
-        self.type_of_info = 'Weather Forecast '
+        self.type_of_info = 'Weather Forecast'
         self.description = NewInformation.info_description(self)
         self.text_in_file = self.description + 'Temperature: ' + self.degrees + ' in ' + self.city + \
                             ' Date:' + self.date + '\n' + self.end_record + '\n'
         self.add_new_info_in_the_file()
+        news_to_db = lab10.PostgreSqlInsert()
+        lab10.PostgreSqlInsert.insert_new_records_news(news_to_db, self.type_of_info, note_text, self.city, self.date,
+                                                       self.degrees)
 
 
 class NewRecordsFromFile:
@@ -75,6 +86,7 @@ class NewRecordsFromFile:
         self.full_path = os.path.join(self.folder_to_load, self.name_of_txt_file)
         self.cnt_of_all_records = 0
         self.line_to_insert = ''
+        self.dict_of_news = []
 
     def is_file_exists(self):
         if os.path.exists(self.full_path):
@@ -95,12 +107,14 @@ class NewRecordsFromFile:
                     cur_line_of_file = file_info_inserted.readline()
                     if (NewInformation.end_record not in cur_line_of_file) and (cur_line_of_file != ''):
                         self.line_to_insert += lab4.sentence_with_capit_letters((cur_line_of_file.split('. ')))
+                        self.dict_of_news.append(lab4.sentence_with_capit_letters((cur_line_of_file.split('. '))))
                         self.cnt_of_all_records += 1
                     elif (NewInformation.end_record in cur_line_of_file) and (cur_line_of_file != '\n') \
                             and (cur_line_of_file != ''):
                         cnt_of_records_in_file += 1
                         self.cnt_of_all_records += 1
                         self.line_to_insert += cur_line_of_file
+                        self.dict_of_news.append(cur_line_of_file)
                     elif cur_line_of_file == '':
                         cnt_of_records_in_file = self.len_of_reading_file()
             self.line_to_insert += '\n'
@@ -110,6 +124,8 @@ class NewRecordsFromFile:
         if self.is_file_exists:
             with open(NewInformation.file_to_write, 'a') as file_for_insert:
                 file_for_insert.write(self.read_from_file())
+                #print(self.line_to_insert)
+                self.proceed_txt()
                 print('New data was added into file')
             create_files_csv()
 
@@ -126,6 +142,70 @@ class NewRecordsFromFile:
             print('WARNING! You chose more records for load than in file, the whole file will be loaded')
         return self.count_of_records
 
+    def proceed_txt(self):
+        text_file_in_dict = self.line_to_insert.split('\n')
+        delim = '-' * 30
+        cnt_elem = 0
+        while cnt_elem in range(len(text_file_in_dict)):
+            text = ''
+            if 'NEWS' in text_file_in_dict[cnt_elem].upper():
+                start_feed = cnt_elem
+                while delim not in text_file_in_dict[cnt_elem]:
+                    cnt_elem += 1
+                else:
+                    end_feed = cnt_elem
+                type_of_news = 'NEWS'
+                city_time_news = text_file_in_dict[end_feed - 1]
+                cnt = 0
+                while city_time_news[cnt] != ',':
+                    cnt += 1
+                city_news = city_time_news[0: cnt]
+                date_time_news = city_time_news[cnt + 2::]
+                start_feed += 1
+                while start_feed < end_feed - 1:
+                    text += text_file_in_dict[start_feed]
+                    start_feed += 1
+                news_to_db = lab10.PostgreSqlInsert()
+                lab10.PostgreSqlInsert.insert_new_records_news(news_to_db, type_of_news, text, city_news, date_time_news, '')
+                text = ''
+            if 'PRIVATE AD' in text_file_in_dict[cnt_elem].upper():
+                start_feed = cnt_elem
+                while delim not in text_file_in_dict[cnt_elem]:
+                    cnt_elem += 1
+                else:
+                    end_feed = cnt_elem
+                type_of_news = 'PRIVATE AD'
+                date_news = (text_file_in_dict[end_feed - 1]).replace('Actual until: ', '')
+                cnt = 0
+                while date_news[cnt] != ',':
+                    cnt += 1
+                date_time_news = date_news[0: cnt]
+                start_feed += 1
+                while start_feed < end_feed - 1:
+                    text += text_file_in_dict[start_feed]
+                    start_feed += 1
+                news_to_db = lab10.PostgreSqlInsert()
+                lab10.PostgreSqlInsert.insert_new_records_news(news_to_db, type_of_news, text, '', date_time_news, '')
+                text = ''
+            if 'WEATHER FORECAST' in text_file_in_dict[cnt_elem].upper():
+                start_feed = cnt_elem
+                while delim not in text_file_in_dict[cnt_elem]:
+                    cnt_elem += 1
+                else:
+                    end_feed = cnt_elem
+                type_of_news = 'WEATHER FORECAST'
+                date_news = (((text_file_in_dict[end_feed - 1]).replace('Temperature: ', '')).replace(' in ', ' ')).replace('date:', '')
+                date_tem_city = date_news.split()
+                temperature = date_tem_city[0]
+                city_news = date_tem_city[1].capitalize()
+                date_time_news = date_tem_city[2]
+                start_feed += 1
+                while start_feed < end_feed - 1:
+                    text += text_file_in_dict[start_feed]
+                    start_feed += 1
+                news_to_db = lab10.PostgreSqlInsert()
+                lab10.PostgreSqlInsert.insert_new_records_news(news_to_db, type_of_news, text, city_news, date_time_news, temperature)
+            cnt_elem += 1
 
 def create_files_csv():
     file_to_prov = lab7.CsvProcessing(NewInformation.file_to_write)
@@ -214,15 +294,30 @@ def load_from_file():
 
 def main_menu():
     print(' Hi, welcome to our news feed.')
-    mode_type = ''
-    while mode_type != '0':
-        mode_type = input(' Would you like to type info or load from file? 1 - type, 2 - load from file, 0 - exit\n')
-        if mode_type not in ['0', '1', '2']:
-            print(f'Your choice is "{mode_type}" and it is not an expected value, please try again')
-        elif mode_type == '1':
-            type_new_info()
-        elif mode_type == '2':
-            load_from_file()
+    work_with_db = ''
+    while work_with_db != '0':
+        mode_type = ''
+        work_with_db = input('Would you like to add info into empty DB tables or insert into existed? 1 - empty tables,'
+                             ' 2 - exist tables, 3- duplicate check 0 - exit\n')
+        if work_with_db not in ['0', '1', '2', '3']:
+            print(f'Your choice is "{work_with_db}" and it is not an expected value, please try again')
+        elif work_with_db in ['1', '2', '3']:
+            if work_with_db == '3':
+                duplic = lab10.PostgreSqlInsert()
+                lab10.PostgreSqlInsert.duplicate(duplic)
+            while mode_type != '0' and work_with_db in ['1', '2']:
+                if work_with_db == '1':
+                    lab10.create_tables()
+                mode_type = input(
+                    ' Would you like to type info or load from file? 1 - type, 2 - load from file, 0 - exit\n')
+                if mode_type not in ['0', '1', '2']:
+                    print(f'Your choice is "{mode_type}" and it is not an expected value, please try again')
+                elif mode_type == '1':
+                    type_new_info()
+                elif mode_type == '2':
+                    load_from_file()
+            else:
+                print('Return to previous level')
     else:
         print('The program finished working.')
 

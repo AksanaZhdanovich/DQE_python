@@ -1,4 +1,6 @@
 import os
+
+import lab10
 import lab4
 from datetime import datetime
 import json
@@ -38,13 +40,19 @@ class JsonProcess:
                 if i == 'header':
                     file_for_insert.write(lab4.sentence_with_capit_letters((json_dict[i].split('. '))) + ' '
                                           + '-' * (self.length_of_description - len(json_dict[i]) - 1) + '\n')
+                    type_of_news = lab4.sentence_with_capit_letters((json_dict[i].split('. ')))
                 if i == 'text':
                     file_for_insert.write(lab4.sentence_with_capit_letters((json_dict[i].split('. '))) + '\n')
+                    text_of_news = lab4.sentence_with_capit_letters((json_dict[i].split('. ')))
                 if i == 'city':
                     file_for_insert.write(json_dict[i].capitalize() + ', ')
+                    city_of_news = json_dict[i].capitalize()
                 if i == 'date_time':
                     file_for_insert.write(json_dict[i] + '\n')
+                    date_time = json_dict[i]
             file_for_insert.write(self.end_record + '\n')
+            news_to_db = lab10.PostgreSqlInsert()
+            lab10.PostgreSqlInsert.insert_new_records_news(news_to_db, type_of_news,  text_of_news, city_of_news, date_time, '')
 
     def proceed_ad(self, json_dict):
         with open(self.file_to_write, 'a') as file_for_insert:
@@ -53,15 +61,21 @@ class JsonProcess:
                     file_for_insert.write(
                         lab4.sentence_with_capit_letters((json_dict[i].split('. ')))
                         + ' ' + '-' * (self.length_of_description - len(json_dict[i]) - 1) + '\n')
+                    type_of_news = lab4.sentence_with_capit_letters((json_dict[i].split('. ')))
                 if i == 'text':
                     file_for_insert.write(lab4.sentence_with_capit_letters((json_dict[i].split('. '))) + '\n')
+                    text_of_news = lab4.sentence_with_capit_letters((json_dict[i].split('. ')))
                 if i == 'city':
                     file_for_insert.write(json_dict[i].capitalize() + ', ')
                 if i == 'date':
                     file_for_insert.write('Actual until: ' + json_dict[i] + ', ' +
                                           str((datetime.strptime(json_dict[i], '%d/%m/%Y')
                                                - datetime.now()).days + 1) + ' days left.' + '\n')
+                    date_time = json_dict[i]
             file_for_insert.write(self.end_record + '\n')
+            news_to_db = lab10.PostgreSqlInsert()
+            lab10.PostgreSqlInsert.insert_new_records_news(news_to_db, type_of_news, text_of_news, '',
+                                                           date_time, '')
 
     def proceed_weather(self, json_dict):
         with open(self.file_to_write, 'a') as file_for_insert:
@@ -70,15 +84,23 @@ class JsonProcess:
                     file_for_insert.write(
                         lab4.sentence_with_capit_letters((json_dict[i].split('. ')))
                         + ' ' + '-' * (self.length_of_description - len(json_dict[i]) - 1) + '\n')
+                    type_of_news = lab4.sentence_with_capit_letters((json_dict[i].split('. ')))
                 if i == 'text':
                     file_for_insert.write(lab4.sentence_with_capit_letters((json_dict[i].split('. '))) + '\n')
+                    text_of_news = lab4.sentence_with_capit_letters((json_dict[i].split('. ')))
                 if i == 'temperature':
                     file_for_insert.write('Temperature: ' + json_dict[i])
+                    temperature = json_dict[i]
                 if i == 'city':
                     file_for_insert.write(' in ' + json_dict[i].capitalize() + ' ')
+                    city_of_news = json_dict[i].capitalize()
                 if i == 'date':
                     file_for_insert.write('Date:' + json_dict[i] + '\n')
+                    date_time = json_dict[i]
             file_for_insert.write(self.end_record + '\n')
+            news_to_db = lab10.PostgreSqlInsert()
+            lab10.PostgreSqlInsert.insert_new_records_news(news_to_db, type_of_news, text_of_news, city_of_news,
+                                                           date_time, temperature)
 
     def is_file_can_be_processed(self):
         json_dict = JsonProcess.read_from_json(self)
